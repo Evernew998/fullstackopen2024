@@ -10,7 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [personsToShow, setPersonsToShow] = useState(persons)
-  const [notificationObject, setNotificationMessage] = useState({ status: "error", message: "success" })
+  const [notificationObject, setNotificationMessage] = useState(null)
 
   useEffect(() => {
     contactService
@@ -47,6 +47,18 @@ const App = () => {
             const newNotificationObject = { status: "success", message: `Updated ${updatedPerson.name}'s number` }
             setNotificationMessage(newNotificationObject)
 
+            setTimeout(() => {
+              setNotificationMessage(null)
+            }, 4000)
+          })
+          .catch(error => {
+            const newPersonsList = persons.filter(person => person.id !== personObject.id)
+            setPersons(newPersonsList)
+            setPersonsToShow(newPersonsList)
+
+            const newNotificationObject = { status: "error", message: `Information of ${personObject.name} has already been remove from the server` }
+            setNotificationMessage(newNotificationObject)
+    
             setTimeout(() => {
               setNotificationMessage(null)
             }, 4000)
@@ -110,18 +122,6 @@ const App = () => {
           const newPersonsList = persons.filter(person => person.id !== deletedPerson.id)
           setPersons(newPersonsList)
           setPersonsToShow(newPersonsList)
-        })
-        .catch(error => {
-          const newPersonsList = persons.filter(person => person.id !== deletedPerson.id)
-          setPersons(newPersonsList)
-          setPersonsToShow(newPersonsList)
-
-          const newNotificationObject = { status: "error", message: `Information of ${person.name} has already been remove from the server` }
-          setNotificationMessage(newNotificationObject)
-  
-          setTimeout(() => {
-            setNotificationMessage(null)
-          }, 4000)
         })
     }
   }

@@ -13,7 +13,7 @@ const create = (person) => {
 
 const deleteContact = (id) => {
     const request = axios.delete(`${baseUrl}/${id}`)
-    return request.then(response => response.data).catch(error => error)
+    return request.then(response => response.data)
 }
 
 const update = (id, person) => {
