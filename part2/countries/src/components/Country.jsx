@@ -1,15 +1,16 @@
-const Country = ({ country, areDetailsRequired }) => {
-    console.log("areDetailsRequired: ", areDetailsRequired)
+const Country = ({ country, toggleShowDetails, isButtonHidden }) => {
+    console.log("showDetails ", country.showDetails)
 
-    if (areDetailsRequired === undefined) {
-        areDetailsRequired = false
-        console.log("areDetailsRequired: ", areDetailsRequired)
+    if (country.showDetails === undefined) {
+        country.showDetails = false
+        console.log("showDetails ", country.showDetails)
     }
 
-    if (areDetailsRequired === false) {
+    if (country.showDetails === false) {
         return (
             <div>
                 {country.name.common}
+                <button onClick={toggleShowDetails}>show</button>
             </div>
         )
     }
@@ -24,7 +25,10 @@ const Country = ({ country, areDetailsRequired }) => {
 
     return (
         <div>
-            <h1>{commonName}</h1>
+            <h1>
+                {commonName}
+                <button hidden={isButtonHidden} onClick={toggleShowDetails}>hide</button>
+            </h1>
             <div>capital {capitalCity}</div>
             <div>area {area}</div>
             <p><strong>languages:</strong></p>

@@ -11,6 +11,12 @@ const App = () => {
     countriesServices.getAll()
     .then(allCountries => {
       console.log("Modifying countries state")
+
+      allCountries.map(country => {
+        country["showDetails"] = false;
+        return country
+      })
+
       setCountries(allCountries)
     })
   },[])
@@ -37,12 +43,23 @@ const App = () => {
     setCountriesToShow(filteredCountries)
   }
 
+  const toggleShowDetails = country => {
+    country.showDetails = !country.showDetails
+    console.log(`${country.name.common}'s showDetails is ${country.showDetails}`)
+
+    const updatedCountries = countries.map(c => c.name.common != country.name.common ? c : country)
+    setCountries(updatedCountries)
+  }
+
   return (
     <div>
         <Filter handleFilter={handleFilter}/>
         <div>
         {
-          <Countries countries={countriesToShow} />
+          <Countries 
+            countries={countriesToShow} 
+            toggleShowDetails={toggleShowDetails}
+          />
         }
         </div>
     </div>
