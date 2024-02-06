@@ -1,21 +1,8 @@
 import { useState, useEffect } from 'react'
 import Note from './components/Note'
-import noteService from './services/notes'
 import Notification from './components/Notifications'
-
-const Footer = () => {
-  const footerStyle = {
-    color: 'green',
-    fontStyle: 'italic',
-    fontSize: 16
-  }
-  return (
-    <div style={footerStyle}>
-      <br />
-      <em>Note app, Department of Computer Science, University of Helsinki 2023</em>
-    </div>
-  )
-}
+import Footer from './components/Footer'
+import noteService from './services/notes'
 
 const App = () => {
   const [notes, setNotes] = useState([])
@@ -31,14 +18,29 @@ const App = () => {
       })
   }, [])
 
+  const addNote = (event) => {
+    event.preventDefault()
+    const noteObject = {
+      content: newNote,
+      important: Math.random() > 0.5,
+    }
+  
+    noteService
+      .create(noteObject)
+        .then(returnedNote => {
+        setNotes(notes.concat(returnedNote))
+        setNewNote('')
+      })
+  }
+
   const toggleImportanceOf = id => {
     const note = notes.find(n => n.id === id)
     const changedNote = { ...note, important: !note.important }
   
     noteService
       .update(id, changedNote)
-      .then(returnedNote => {
-        setNotes(notes.map(n => n.id !== id ? n : returnedNote))
+        .then(returnedNote => {
+        setNotes(notes.map(note => note.id !== id ? note : returnedNote))
       })
       .catch(error => {
         setErrorMessage(
@@ -47,33 +49,16 @@ const App = () => {
         setTimeout(() => {
           setErrorMessage(null)
         }, 5000)
-        setNotes(notes.filter(n => n.id !== id))
-      })
-  }
-
-  const addNote = (event) => {
-    event.preventDefault()
-    const noteObject = {
-      content: newNote,
-      important: Math.random() < 0.5,
-    }
-
-    noteService
-      .create(noteObject)
-      .then(returnedNote => {
-        setNotes(notes.concat(returnedNote))
-        setNewNote('')
       })
   }
 
   const handleNoteChange = (event) => {
-    console.log(event.target.value)
     setNewNote(event.target.value)
   }
 
   const notesToShow = showAll
     ? notes
-    : notes.filter(note => note.important === true)
+    : notes.filter(note => note.important)
 
   return (
     <div>
@@ -83,16 +68,20 @@ const App = () => {
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all' }
         </button>
-      </div>
+      </div>      
       <ul>
         {notesToShow.map(note => 
-          <Note key={note.id} note={note} toggleImportance={() => toggleImportanceOf(note.id)} />
+          <Note
+            key={note.id}
+            note={note}
+            toggleImportance={() => toggleImportanceOf(note.id)}
+          />
         )}
       </ul>
       <form onSubmit={addNote}>
-        <input 
-          onChange={handleNoteChange} 
-          value={newNote} 
+      <input
+          value={newNote}
+          onChange={handleNoteChange}
         />
         <button type="submit">save</button>
       </form>
@@ -101,4 +90,4 @@ const App = () => {
   )
 }
 
-export default App 
+export default App
