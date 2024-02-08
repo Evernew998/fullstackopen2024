@@ -77,6 +77,7 @@ const App = () => {
     contactService
       .create(personObject)
       .then(returnedPerson => {
+        console.log("returnedPerson = ", returnedPerson)
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
@@ -88,6 +89,9 @@ const App = () => {
         setTimeout(() => {
           setNotificationMessage(null)
         }, 4000)
+      })
+      .catch(error => {
+        console.log(error)
       })
   }
 
@@ -119,9 +123,12 @@ const App = () => {
       contactService
         .deleteContact(person.id)
         .then(deletedPerson => {
-          const newPersonsList = persons.filter(person => person.id !== deletedPerson.id)
+          const newPersonsList = persons.filter(p => p.id !== person.id)
           setPersons(newPersonsList)
           setPersonsToShow(newPersonsList)
+        })
+        .catch(error => {
+          console.log(error)
         })
     }
   }
