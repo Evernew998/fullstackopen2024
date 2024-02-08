@@ -114,8 +114,6 @@ const App = () => {
         const newNotificationObject = {
            status: "error", message: errorMessage
         }
-
-        console.log(newNotificationObject)
         setNotificationMessage(newNotificationObject)
         setNewName('')
         setNewNumber('')
