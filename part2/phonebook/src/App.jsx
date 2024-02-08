@@ -55,7 +55,9 @@ const App = () => {
             const newPersonsList = persons.filter(person => person.id !== personObject.id)
             setPersons(newPersonsList)
             setPersonsToShow(newPersonsList)
-
+            setNewName('')
+            setNewNumber('')
+            
             const newNotificationObject = { status: "error", message: `Information of ${personObject.name} has already been remove from the server` }
             setNotificationMessage(newNotificationObject)
     
@@ -65,6 +67,21 @@ const App = () => {
           })
         return
       }
+      return
+    }
+
+    if (newName.length === 0 || newNumber.length === 0) {
+      const newNotificationObject = {
+        status: "error", message: "name and/or number cannot be empty"
+      }
+      setNotificationMessage(newNotificationObject)
+      setNewName('')
+      setNewNumber('')
+
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 4000)
+
       return
     }
 
@@ -91,7 +108,21 @@ const App = () => {
         }, 4000)
       })
       .catch(error => {
-        console.log(error)
+        const errorMessage = error.response.data.error
+        console.log(errorMessage)
+
+        const newNotificationObject = {
+           status: "error", message: errorMessage
+        }
+
+        console.log(newNotificationObject)
+        setNotificationMessage(newNotificationObject)
+        setNewName('')
+        setNewNumber('')
+
+        setTimeout(() => {
+          setNotificationMessage(null)
+        }, 4000)
       })
   }
 
