@@ -34,9 +34,6 @@ app.use(express.static('dist'))
 app.use(express.json())
 app.use(requestLogger)
 
-let notes = [
-]
-
 app.get('/api/notes', (request, response) => {
   Note.find({}).then(notes => {
     response.json(notes)
@@ -94,7 +91,7 @@ app.put('/api/notes/:id', (request, response, next) => {
 app.delete('/api/notes/:id', (request, response, next) => {
   const id = request.params.id
   Note.findByIdAndDelete(id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))

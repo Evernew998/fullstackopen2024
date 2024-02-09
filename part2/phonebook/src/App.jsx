@@ -159,7 +159,7 @@ const App = () => {
       console.log(`deleting ${person.name}`)
       contactService
         .deleteContact(person.id)
-        .then(deletedPerson => {
+        .then(() => {
           const newPersonsList = persons.filter(p => p.id !== person.id)
           setPersons(newPersonsList)
           setPersonsToShow(newPersonsList)
