@@ -1,16 +1,15 @@
 const mongoose = require('mongoose')
 
-if (process.argv.length<3) {
+if (process.argv.length < 3) {
   console.log('give password as argument')
   process.exit(1)
 }
 
 const password = process.argv[2]
 
-const url =
-  `mongodb+srv://fullstack:${password}@clusternotes.dknferp.mongodb.net/noteApp?retryWrites=true&w=majority`
+const url = `mongodb+srv://fullstack:${password}@clusternotes.dknferp.mongodb.net/noteApp?retryWrites=true&w=majority`
 
-mongoose.set('strictQuery',false)
+mongoose.set('strictQuery', false)
 mongoose.connect(url)
 
 const noteSchema = new mongoose.Schema({
@@ -33,7 +32,7 @@ note.save().then(result => {
 })
 */
 
-Note.find({ content: 'Getting a job is hard' }).then(result => {
-    console.log(result)
-    mongoose.connection.close()
+Note.find({ content: 'Getting a job is hard' }).then((result) => {
+  console.log(result)
+  mongoose.connection.close()
 })
