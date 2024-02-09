@@ -39,26 +39,34 @@ const App = () => {
         contactService
           .update(personObject.id, personObject)
           .then(updatedPerson => {
-            const newPersonsList = persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson)
+            let newPersonsList = []
+            let newNotificationObject = {}
+
+            if (updatedPerson === null) {
+              newPersonsList = persons.filter(person => person.id !== personObject.id)
+              newNotificationObject = { status: "error", message: `Information of ${personObject.name} has already been remove from the server` }
+            }
+            else {
+              newPersonsList = persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson)
+              newNotificationObject = { status: "success", message: `Updated ${updatedPerson.name}'s number` }
+            }
 
             setPersons(newPersonsList)
             setPersonsToShow(newPersonsList)
-
-            const newNotificationObject = { status: "success", message: `Updated ${updatedPerson.name}'s number` }
             setNotificationMessage(newNotificationObject)
+            setNewName('')
+            setNewNumber('')
 
             setTimeout(() => {
               setNotificationMessage(null)
             }, 4000)
           })
           .catch(error => {
-            const newPersonsList = persons.filter(person => person.id !== personObject.id)
-            setPersons(newPersonsList)
-            setPersonsToShow(newPersonsList)
-            setNewName('')
-            setNewNumber('')
+            const errorMessage = error.response.data.error
             
-            const newNotificationObject = { status: "error", message: `Information of ${personObject.name} has already been remove from the server` }
+            const newNotificationObject = {
+              status: "error", message: errorMessage
+            }
             setNotificationMessage(newNotificationObject)
     
             setTimeout(() => {
