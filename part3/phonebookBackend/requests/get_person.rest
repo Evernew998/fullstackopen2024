@@ -1,0 +1,7 @@
+GET http://localhost:3001/api/persons/65c358ba1bc3a0449c863572
+
+###
+GET http://localhost:3001/api/persons/po
+
+###
+GET https://phonebook2024.onrender.com/api/persons/3
