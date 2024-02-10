@@ -24,15 +24,16 @@ const note = new Note({
   important: true,
 })
 
-/*
+
 note.save().then(result => {
   console.log('note saved!')
   console.log(result)
   mongoose.connection.close()
 })
-*/
 
+/*
 Note.find({ content: 'Getting a job is hard' }).then((result) => {
   console.log(result)
   mongoose.connection.close()
 })
+*/
