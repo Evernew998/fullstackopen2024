@@ -55,7 +55,7 @@ const listWithManyBlogs = [
   {
     _id: '5a422bc61b54a676234d17fc',
     title: 'Type wars',
-    author: 'Martin',
+    author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
     likes: 2,
     __v: 0,
@@ -116,35 +116,14 @@ describe('favourite blog', () => {
   })
 })
 
-test('authors array', () => {
-  const result = listHelper.createAuthorsArray(listWithManyBlogs)
-  expect(result)
-    .toEqual([
-      {
-        author: 'Michael Chan',
-        blogs: 0
-      },
-      {
-        author: 'Edsger W. Dijkstra',
-        blogs: 0
-      },
-      {
-        author: 'Robert C. Martin',
-        blogs: 0
-      }
-    ])
-})
-
 describe('most blogs', () => {
-  test.only('when list has many blogs, equals author with most blogs. If there are many top bloggers, return the first top blogger.', () => {
+  test('when list has many blogs, equals author with most blogs. If there are many top bloggers, return the first top blogger.', () => {
     const result = listHelper.mostBlogs(listWithManyBlogs)
     expect(result)
-      .toEqual(
-        {
-          author: 'Edsger W. Dijkstra',
-          blogs: 2
-        }
-      )
+      .toEqual({
+        author: 'Robert C. Martin',
+        blogs: 3
+      })
   })
 
   test('when list has one blog, equals author who wrote that blog', () => {
@@ -165,3 +144,31 @@ describe('most blogs', () => {
   })
 })
 
+describe('most likes', () => {
+  test('when list has many blogs, equals author with most total likes. If there are many top authors, return the first top author.', () => {
+    console.log('listWithManyBlogs', listWithManyBlogs)
+    const result = listHelper.mostLikes(listWithManyBlogs)
+    expect(result)
+      .toEqual({
+        author: 'Edsger W. Dijkstra',
+        likes: 15
+      })
+  })
+
+  test('when list has one blog, equals author who wrote that blog', () => {
+    const result = listHelper.mostLikes(listWithOneBlog)
+    expect(result)
+      .toEqual(
+        {
+          author: 'Edsger W. Dijkstra',
+          likes: 5
+        }
+      )
+  })
+
+  test('when list has no blogs, equals undefined', () => {
+    const result = listHelper.mostLikes(listWithNoBlogs)
+    expect(result)
+      .toEqual(undefined)
+  })
+})

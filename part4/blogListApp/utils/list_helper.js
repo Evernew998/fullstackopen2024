@@ -32,58 +32,96 @@ const favouriteBlog = (blogs) => {
   return mostPopularBlog
 }
 
-const createAuthorsArray = (blogs) => {
-  const authors = []
-
-  blogs.forEach(blog => {
-    const name = blog.author
-    let isAuthorInArray = false
-
-    for (let i = 0; i < authors.length; i++) {
-      if (authors[i].author === name) {
-        isAuthorInArray = true
-        break
-      }
-    }
-    if (isAuthorInArray === false) {
-      authors.push({
-        author: name,
-        blogs: 0
-      })
-    }
-  })
-
-  console.log(authors)
-  return authors
-}
-
 const mostBlogs = (blogs) => {
   if (blogs.length === 0) {
     return undefined
   }
 
-  const authors = createAuthorsArray(blogs)
+  let blogsCopy = JSON.parse(JSON.stringify(blogs))
+
+  let topBlogger = {
+    author: '',
+    blogs: 0
+  }
+
   let maxBlogs = 0
 
-  authors.forEach(author => {
-    blogs.forEach(blog => {
-      if (blog.author === author.author) {
-        author.blogs += 1
-      }
-    })
-    maxBlogs = author.blogs > maxBlogs ? author.blogs : maxBlogs
-  })
+  for (let i = 0; i < blogsCopy.length; i++) {
+    let numberOfBlogs = 0
 
-  console.log(authors)
-  console.log(maxBlogs)
-  console.log(authors.find(author => author.blogs === maxBlogs))
-  return authors.find(author => author.blogs === maxBlogs)
+    if (blogsCopy[i].author === '@') {
+      continue
+    }
+
+    const author = blogsCopy[i].author
+
+    for (let j = i; j < blogsCopy.length; j++) {
+
+      if (author === blogsCopy[j].author) {
+        blogsCopy[j].author = '@'
+        numberOfBlogs ++
+      }
+    }
+
+    if (numberOfBlogs > maxBlogs) {
+      topBlogger = {
+        author: author,
+        blogs: numberOfBlogs
+      }
+
+      maxBlogs = numberOfBlogs
+    }
+  }
+  return topBlogger
+}
+
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) {
+    return undefined
+  }
+
+  let blogsCopy = JSON.parse(JSON.stringify(blogs))
+  let topAuthor = {
+    author: '',
+    likes: 0
+  }
+
+  let maxLikes = 0
+
+  for (let i = 0; i < blogsCopy.length; i++) {
+    if (blogsCopy[i].author === '@') {
+      continue
+    }
+
+    let numberOfLikes = 0
+    const author = blogsCopy[i].author
+
+    for (let j = i; j < blogsCopy.length; j++) {
+
+      if (author === blogsCopy[j].author) {
+        blogsCopy[j].author = '@'
+        numberOfLikes += blogsCopy[j].likes
+      }
+    }
+
+    if (numberOfLikes > maxLikes) {
+      topAuthor = {
+        author: author,
+        likes: numberOfLikes
+      }
+
+      maxLikes = numberOfLikes
+    }
+  }
+
+  console.log(topAuthor)
+  return topAuthor
 }
 
 module.exports = {
   dummy,
   totalLikes,
   favouriteBlog,
-  createAuthorsArray,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
