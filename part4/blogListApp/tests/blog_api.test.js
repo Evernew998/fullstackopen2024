@@ -48,11 +48,12 @@ test('all blogs are returned', async () => {
   expect(response.body).toHaveLength(initialBlogs.length)
 })
 
-test('a specific blog is within the returned blogs', async () => {
+test.only('blogs have an id property', async () => {
   const response = await api.get('/api/blogs')
-  const blogAuthors = response.body.map(blog => blog.author)
-
-  expect(blogAuthors).toContain(initialBlogs[0].author)
+  console.log(response.body)
+  for (let blog of response.body) {
+    expect(blog.id).toBeDefined()
+  }
 })
 
 afterAll(async () => {
