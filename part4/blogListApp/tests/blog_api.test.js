@@ -48,12 +48,35 @@ test('all blogs are returned', async () => {
   expect(response.body).toHaveLength(initialBlogs.length)
 })
 
-test.only('blogs have an id property', async () => {
+test('blogs have an id property', async () => {
   const response = await api.get('/api/blogs')
-  console.log(response.body)
   for (let blog of response.body) {
     expect(blog.id).toBeDefined()
   }
+})
+
+test.only('making an HTTP POST request creates a new blog post', async () => {
+  const newBlog = {
+    title: 'Type wars',
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+    likes: 2,
+  }
+
+  await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const blogs = response.body
+  const blogTitles = blogs.map(blog => blog.title)
+
+  expect(blogs).toHaveLength(initialBlogs.length + 1)
+  expect(blogTitles).toContain(
+    'Type wars'
+  )
 })
 
 afterAll(async () => {
