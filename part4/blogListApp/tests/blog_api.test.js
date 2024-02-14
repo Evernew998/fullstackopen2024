@@ -6,10 +6,13 @@ const api = supertest(app)
 const Blog = require('../models/blog')
 const helper = require('./test_helper')
 
+/*
 beforeEach(async () => {
   await Blog.deleteMany({})
   await Blog.insertMany(helper.initialBlogs)
 })
+*/
+
 
 describe('when there is initially some blogs saved', () => {
   test('blogs are returned as json', async () => {
@@ -119,7 +122,10 @@ describe('deletion of a blog', () => {
   })
 
   test('fails with status code 400 if id is invalid', async () => {
-    const invalidId = await helper.nonExistingId()
+    //const invalidId = '65cce31d508a76c8dc38570f'
+    const invalidId = 1234567890
+    console.log('test invalidId =', invalidId)
+    console.log('test typeof invalidId =', typeof invalidId)
     await api
       .delete(`/api/blogs/${invalidId}`)
       .expect(400)

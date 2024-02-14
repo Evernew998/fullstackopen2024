@@ -37,10 +37,9 @@ const nonExistingId = async () => {
       likes: 0,
     },
   )
-  console.log('blog before', blog)
+
   await blog.save()
   await blog.deleteOne()
-  console.log('blog after', blog)
   return blog._id.toString()
 }
 
