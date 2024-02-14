@@ -4,32 +4,12 @@ const app = require('../app')
 
 const api = supertest(app)
 const Blog = require('../models/blog')
-
-const initialBlogs = [
-  {
-    title: 'React patterns',
-    author: 'Michael Chan',
-    url: 'https://reactpatterns.com/',
-    likes: 7,
-  },
-  {
-    title: 'Go To Statement Considered Harmful',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-    likes: 5,
-  },
-  {
-    title: 'Canonical string reduction',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-    likes: 10,
-  }
-]
+const helper = require('./test_helper')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  for (let blog of initialBlogs) {
+  for (let blog of helper.initialBlogs) {
     let blogObject = new Blog(blog)
     await blogObject.save()
   }
@@ -44,7 +24,7 @@ test('blogs are returned as json', async () => {
 
 test('all blogs are returned', async () => {
   const response = await api.get('/api/blogs')
-  expect(response.body).toHaveLength(initialBlogs.length)
+  expect(response.body).toHaveLength(helper.initialBlogs.length)
 })
 
 test('blogs have an id property', async () => {
@@ -68,11 +48,10 @@ test('making an HTTP POST request creates a new blog post', async () => {
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
-  const response = await api.get('/api/blogs')
-  const blogs = response.body
+  const blogs = await helper.blogsInDb()
   const blogTitles = blogs.map(blog => blog.title)
 
-  expect(blogs).toHaveLength(initialBlogs.length + 1)
+  expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
   expect(blogTitles).toContain(
     'Type wars'
   )
@@ -91,10 +70,8 @@ test('if the likes property is missing from the request, it will default to 0', 
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
-  const response = await api.get('/api/blogs')
-  const blogs = response.body
+  const blogs = await helper.blogsInDb()
   const returnedBlog = blogs[blogs.length - 1]
-  console.log(returnedBlog)
 
   expect(returnedBlog.likes).toBe(0)
 })
