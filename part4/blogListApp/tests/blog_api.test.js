@@ -55,7 +55,7 @@ test('blogs have an id property', async () => {
   }
 })
 
-test.only('making an HTTP POST request creates a new blog post', async () => {
+test('making an HTTP POST request creates a new blog post', async () => {
   const newBlog = {
     title: 'Type wars',
     author: 'Robert C. Martin',
@@ -64,10 +64,10 @@ test.only('making an HTTP POST request creates a new blog post', async () => {
   }
 
   await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
 
   const response = await api.get('/api/blogs')
   const blogs = response.body
@@ -77,6 +77,27 @@ test.only('making an HTTP POST request creates a new blog post', async () => {
   expect(blogTitles).toContain(
     'Type wars'
   )
+})
+
+test('if the likes property is missing from the request, it will default to 0', async () => {
+  const newBlog = {
+    title: 'Type wars',
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const blogs = response.body
+  const returnedBlog = blogs[blogs.length - 1]
+  console.log(returnedBlog)
+
+  expect(returnedBlog.likes).toBe(0)
 })
 
 afterAll(async () => {
