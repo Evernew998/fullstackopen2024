@@ -28,12 +28,11 @@ const initialBlogs = [
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  let blogObject = new Blog(initialBlogs[0])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[1])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[2])
-  await blogObject.save()
+
+  for (let blog of initialBlogs) {
+    let blogObject = new Blog(blog)
+    await blogObject.save()
+  }
 })
 
 test('blogs are returned as json', async () => {
@@ -98,6 +97,32 @@ test('if the likes property is missing from the request, it will default to 0', 
   console.log(returnedBlog)
 
   expect(returnedBlog.likes).toBe(0)
+})
+
+test('backend responds with the status code 400 Bad Request if the title is missing from request' , async () => {
+  const newBlog = {
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+    likes: 5
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+})
+
+test('backend responds with the status code 400 Bad Request if the url is missing from request' , async () => {
+  const newBlog = {
+    title: 'Type wars',
+    author: 'Robert C. Martin',
+    likes: 5
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
 })
 
 afterAll(async () => {
