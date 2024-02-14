@@ -6,13 +6,10 @@ const api = supertest(app)
 const Blog = require('../models/blog')
 const helper = require('./test_helper')
 
-/*
 beforeEach(async () => {
   await Blog.deleteMany({})
   await Blog.insertMany(helper.initialBlogs)
 })
-*/
-
 
 describe('when there is initially some blogs saved', () => {
   test('blogs are returned as json', async () => {
@@ -123,12 +120,50 @@ describe('deletion of a blog', () => {
 
   test('fails with status code 400 if id is invalid', async () => {
     //const invalidId = '65cce31d508a76c8dc38570f'
-    const invalidId = 1234567890
+    const invalidId = '1234567890'
     console.log('test invalidId =', invalidId)
     console.log('test typeof invalidId =', typeof invalidId)
     await api
       .delete(`/api/blogs/${invalidId}`)
       .expect(400)
+  })
+
+  test('succeeds with status code 204 when deleting a non-existing blog', async () => {
+    const nonExistingId = await helper.nonExistingId()
+    await api
+      .delete(`/api/blogs/${nonExistingId}`)
+      .expect(204)
+  })
+})
+
+describe('updating a blog', () => {
+  test('succeeds with status code 200 when blog exists', async () => {
+    const oldBlogs = await helper.blogsInDb()
+    const id = oldBlogs[0].id
+    const updatedBlog = {
+      title: 'updatedTitle',
+      author: oldBlogs[0].author,
+      url: oldBlogs[0].url,
+      likes: 15
+    }
+
+    await api
+      .put(`/api/blogs/${id}`)
+      .send(updatedBlog)
+      .expect(200)
+
+    const updatedBlogs = await helper.blogsInDb()
+    const returnedBlog = updatedBlogs[0]
+
+    updatedBlog.id = id
+
+    console.log('id =', id)
+    console.log('old blog =', oldBlogs[0])
+    console.log('updated blog =', updatedBlog)
+    console.log('returned bLog =', returnedBlog)
+
+    expect(returnedBlog).not.toEqual(oldBlogs[0])
+    expect(returnedBlog).toEqual(updatedBlog)
   })
 })
 
