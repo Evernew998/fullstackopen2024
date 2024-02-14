@@ -121,8 +121,6 @@ describe('deletion of a blog', () => {
   test('fails with status code 400 if id is invalid', async () => {
     //const invalidId = '65cce31d508a76c8dc38570f'
     const invalidId = '1234567890'
-    console.log('test invalidId =', invalidId)
-    console.log('test typeof invalidId =', typeof invalidId)
     await api
       .delete(`/api/blogs/${invalidId}`)
       .expect(400)
@@ -157,13 +155,24 @@ describe('updating a blog', () => {
 
     updatedBlog.id = id
 
-    console.log('id =', id)
-    console.log('old blog =', oldBlogs[0])
-    console.log('updated blog =', updatedBlog)
-    console.log('returned bLog =', returnedBlog)
-
     expect(returnedBlog).not.toEqual(oldBlogs[0])
     expect(returnedBlog).toEqual(updatedBlog)
+  })
+
+  test('succeeds with status code 200 even when blog does not exist', async () => {
+    const nonExistingId = await helper.nonExistingId()
+
+    const updatedBlog = {
+      title: 'updatedTitle',
+      author: 'updatedAuthor',
+      url: 'updatedUrl',
+      likes: 15
+    }
+
+    await api
+    .put(`/api/blogs/${nonExistingId}`)
+    .send(updatedBlog)
+    .expect(200)    
   })
 })
 
