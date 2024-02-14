@@ -8,98 +8,122 @@ const helper = require('./test_helper')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-
-  for (let blog of helper.initialBlogs) {
-    let blogObject = new Blog(blog)
-    await blogObject.save()
-  }
+  await Blog.insertMany(helper.initialBlogs)
 })
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+describe('when there is initially some blogs saved', () => {
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+
+  test('all blogs are returned', async () => {
+    const response = await api.get('/api/blogs')
+    expect(response.body).toHaveLength(helper.initialBlogs.length)
+  })
+
+  test('blogs have an id property', async () => {
+    const response = await api.get('/api/blogs')
+    for (let blog of response.body) {
+      expect(blog.id).toBeDefined()
+    }
+  })
 })
 
-test('all blogs are returned', async () => {
-  const response = await api.get('/api/blogs')
-  expect(response.body).toHaveLength(helper.initialBlogs.length)
+describe('addition of a new blog', () => {
+  test('making an HTTP POST request creates a new blog post', async () => {
+    const newBlog = {
+      title: 'Type wars',
+      author: 'Robert C. Martin',
+      url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+      likes: 2,
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogs = await helper.blogsInDb()
+    const blogTitles = blogs.map(blog => blog.title)
+
+    expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
+    expect(blogTitles).toContain(
+      'Type wars'
+    )
+  })
+
+  test('if the likes property is missing from the request, it will default to 0', async () => {
+    const newBlog = {
+      title: 'Type wars',
+      author: 'Robert C. Martin',
+      url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html'
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogs = await helper.blogsInDb()
+    const returnedBlog = blogs[blogs.length - 1]
+
+    expect(returnedBlog.likes).toBe(0)
+  })
+
+  test('backend responds with the status code 400 Bad Request if the title is missing from request' , async () => {
+    const newBlog = {
+      author: 'Robert C. Martin',
+      url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+      likes: 5
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+  })
+
+  test('backend responds with the status code 400 Bad Request if the url is missing from request' , async () => {
+    const newBlog = {
+      title: 'Type wars',
+      author: 'Robert C. Martin',
+      likes: 5
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+  })
 })
 
-test('blogs have an id property', async () => {
-  const response = await api.get('/api/blogs')
-  for (let blog of response.body) {
-    expect(blog.id).toBeDefined()
-  }
-})
+describe('deletion of a blog', () => {
+  test('succeeds with status code 204 if id is valid', async () => {
+    const blogsBefore = await helper.blogsInDb()
+    const blogToDelete = blogsBefore[0]
 
-test('making an HTTP POST request creates a new blog post', async () => {
-  const newBlog = {
-    title: 'Type wars',
-    author: 'Robert C. Martin',
-    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
-    likes: 2,
-  }
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(204)
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+    const blogsAfter = await helper.blogsInDb()
+    expect(blogsAfter).toHaveLength(helper.initialBlogs.length - 1)
 
-  const blogs = await helper.blogsInDb()
-  const blogTitles = blogs.map(blog => blog.title)
+    const blogTitles = blogsAfter.map(blog => blog.title)
+    expect(blogTitles).not.toContain(blogToDelete.title)
+  })
 
-  expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
-  expect(blogTitles).toContain(
-    'Type wars'
-  )
-})
-
-test('if the likes property is missing from the request, it will default to 0', async () => {
-  const newBlog = {
-    title: 'Type wars',
-    author: 'Robert C. Martin',
-    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html'
-  }
-
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
-
-  const blogs = await helper.blogsInDb()
-  const returnedBlog = blogs[blogs.length - 1]
-
-  expect(returnedBlog.likes).toBe(0)
-})
-
-test('backend responds with the status code 400 Bad Request if the title is missing from request' , async () => {
-  const newBlog = {
-    author: 'Robert C. Martin',
-    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
-    likes: 5
-  }
-
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(400)
-})
-
-test('backend responds with the status code 400 Bad Request if the url is missing from request' , async () => {
-  const newBlog = {
-    title: 'Type wars',
-    author: 'Robert C. Martin',
-    likes: 5
-  }
-
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(400)
+  test('fails with status code 400 if id is invalid', async () => {
+    const invalidId = await helper.nonExistingId()
+    await api
+      .delete(`/api/blogs/${invalidId}`)
+      .expect(400)
+  })
 })
 
 afterAll(async () => {
