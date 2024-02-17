@@ -2,6 +2,7 @@ POST http://localhost:3001/api/notes/
 Content-Type: application/json
 
 {
-      "content": "123",
-      "important": true
+      "content": "Tata World",
+      "important": true,
+      "userId": "65d09a208a047e893dbd657e"
 }
