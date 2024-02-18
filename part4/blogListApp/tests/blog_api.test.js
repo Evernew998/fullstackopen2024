@@ -1,3 +1,5 @@
+const { test, after, beforeEach, describe } = require('node:test')
+const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
@@ -21,13 +23,13 @@ describe('when there is initially some blogs saved', () => {
 
   test('all blogs are returned', async () => {
     const response = await api.get('/api/blogs')
-    expect(response.body).toHaveLength(helper.initialBlogs.length)
+    assert.strictEqual(response.body.length, helper.initialBlogs.length)
   })
 
   test('blogs have an id property', async () => {
     const response = await api.get('/api/blogs')
     for (let blog of response.body) {
-      expect(blog.id).toBeDefined()
+      assert.notStrictEqual(blog.id, undefined)
     }
   })
 })
@@ -50,10 +52,8 @@ describe('addition of a new blog', () => {
     const blogs = await helper.blogsInDb()
     const blogTitles = blogs.map(blog => blog.title)
 
-    expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
-    expect(blogTitles).toContain(
-      'Type wars'
-    )
+    assert.strictEqual(blogs.length, helper.initialBlogs.length + 1)
+    assert(blogTitles.includes('Type wars'))
   })
 
   test('if the likes property is missing from the request, it will default to 0', async () => {
@@ -72,7 +72,7 @@ describe('addition of a new blog', () => {
     const blogs = await helper.blogsInDb()
     const returnedBlog = blogs[blogs.length - 1]
 
-    expect(returnedBlog.likes).toBe(0)
+    assert.strictEqual(returnedBlog.likes, 0)
   })
 
   test('backend responds with the status code 400 Bad Request if the title is missing from request' , async () => {
@@ -112,10 +112,10 @@ describe('deletion of a blog', () => {
       .expect(204)
 
     const blogsAfter = await helper.blogsInDb()
-    expect(blogsAfter).toHaveLength(helper.initialBlogs.length - 1)
+    assert.strictEqual(blogsAfter.length, helper.initialBlogs.length - 1)
 
     const blogTitles = blogsAfter.map(blog => blog.title)
-    expect(blogTitles).not.toContain(blogToDelete.title)
+    assert(!blogTitles.includes(blogToDelete.title))
   })
 
   test('fails with status code 400 if id is invalid', async () => {
@@ -155,8 +155,8 @@ describe('updating a blog', () => {
 
     updatedBlog.id = id
 
-    expect(returnedBlog).not.toEqual(oldBlogs[0])
-    expect(returnedBlog).toEqual(updatedBlog)
+    assert.notDeepStrictEqual(returnedBlog, oldBlogs[0])
+    assert.deepStrictEqual(returnedBlog, updatedBlog)
   })
 
   test('succeeds with status code 200 even when blog does not exist', async () => {
@@ -170,12 +170,12 @@ describe('updating a blog', () => {
     }
 
     await api
-    .put(`/api/blogs/${nonExistingId}`)
-    .send(updatedBlog)
-    .expect(200)    
+      .put(`/api/blogs/${nonExistingId}`)
+      .send(updatedBlog)
+      .expect(200)
   })
 })
 
-afterAll(async () => {
+after(async () => {
   await mongoose.connection.close()
 })
