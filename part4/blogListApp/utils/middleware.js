@@ -25,6 +25,9 @@ const errorHandler = (error, request, response, next) => {
   else if (error.name === 'MongoServerError' && error.message.includes('E11000 duplicate key error')) {
     return response.status(400).json({ error: 'username is already taken' })
   }
+  else if (error.name === 'JsonWebTokenError') {
+    return response.status(400).json({ error: 'token missing or invalid' })
+  }
 
   next(error)
 }
