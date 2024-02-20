@@ -34,8 +34,8 @@ describe('when there is initially some blogs saved', () => {
   })
 })
 
-describe('addition of a new blog', () => {
-  test('making an HTTP POST request creates a new blog post', async () => {
+describe.only('addition of a new blog', () => {
+  test.only('making an HTTP POST request creates a new blog post', async () => {
     const newBlog = {
       title: 'Type wars',
       author: 'Robert C. Martin',
