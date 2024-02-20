@@ -1,10 +1,10 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkxhaWNpOTk4IiwiaWQiOiI2NWQ0NWFlNTk0NmY4MTFmYjMxZGQ5ZDQiLCJpYXQiOjE3MDg0MTk2MzF9.BuRyc3cQyIPVbtr36TOBVSBH9Gw75Xs4ESMlUyaOpbY
+Authorization: Bearer OjE3MDg0MjIwMzF9.XW022nhLH_1BIyFAVC8mJRpsUwMeItXZIPRyAv0UioM
 
 {
-  "title": "TestBlog",
-  "author": "me",
+  "title": "Hello",
+  "author": "Putin",
   "url": "blogUrlTest",
-  "likes": 10
+  "likes": 23
 }
