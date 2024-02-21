@@ -4,6 +4,7 @@ const User = require('../models/user')
 
 const tokenExtractor = (request, response, next) => {
   const authorization = request.get('authorization')
+  logger.info('authorization', authorization)
 
   if (authorization && authorization.startsWith('Bearer ')) {
     request.token = authorization.replace('Bearer ','')
@@ -59,7 +60,10 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).json({ error: 'username is already taken' })
   }
   else if (error.name === 'JsonWebTokenError') {
-    return response.status(400).json({ error: 'token missing or invalid' })
+    return response.status(401).json({ error: 'token missing or invalid' })
+  }
+  else if (error.name === 'TokenExpiredError') {
+    return response.status(401).json({ error: 'token expired' })
   }
 
   next(error)

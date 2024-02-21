@@ -1,6 +1,7 @@
 const blogRouter = require('express').Router()
 const logger = require('../utils/logger')
 const Blog = require('../models/blog')
+const middleware = require('../utils/middleware')
 
 blogRouter.get('/', async (request, response, next) => {
   try {
@@ -16,11 +17,12 @@ blogRouter.get('/', async (request, response, next) => {
   }
 })
 
-blogRouter.post('/', async (request, response, next) => {
+blogRouter.post('/', middleware.userExtractor, async (request, response, next) => {
   const body = request.body
 
   try {
     const user = request.user
+    logger.info('user:', user)
 
     if (!user) {
       return response.status(400).json({

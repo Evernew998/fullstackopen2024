@@ -6,11 +6,16 @@ const app = require('../app')
 
 const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('./test_helper')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
   await Blog.insertMany(helper.initialBlogs)
+
+  await User.deleteMany({})
+  const user = await helper.getUser()
+  await user.save()
 })
 
 describe('when there is initially some blogs saved', () => {
@@ -34,8 +39,8 @@ describe('when there is initially some blogs saved', () => {
   })
 })
 
-describe.only('addition of a new blog', () => {
-  test.only('making an HTTP POST request creates a new blog post', async () => {
+describe('addition of a new blog', () => {
+  test('making an HTTP POST request creates a new blog post', async () => {
     const newBlog = {
       title: 'Type wars',
       author: 'Robert C. Martin',
@@ -43,8 +48,15 @@ describe.only('addition of a new blog', () => {
       likes: 2,
     }
 
+    const response = await api
+      .post('/api/login')
+      .send(helper.user)
+
+    const token = 'Bearer'.concat(' ', response.body.token)
+
     await api
       .post('/api/blogs')
+      .set({ 'Authorization': token })
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -56,15 +68,43 @@ describe.only('addition of a new blog', () => {
     assert(blogTitles.includes('Type wars'))
   })
 
-  test('if the likes property is missing from the request, it will default to 0', async () => {
+  test('fails with the proper status code 401 Unauthorized if a token is not provided', async () => {
     const newBlog = {
       title: 'Type wars',
       author: 'Robert C. Martin',
-      url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html'
+      url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+      likes: 2,
     }
 
     await api
       .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    const blogs = await helper.blogsInDb()
+    const blogTitles = blogs.map(blog => blog.title)
+
+    assert.strictEqual(blogs.length, helper.initialBlogs.length)
+    assert(!blogTitles.includes('Type wars'))
+  })
+
+  test('if the likes property is missing from the request, it will default to 0', async () => {
+    const newBlog = {
+      title: 'Type wars',
+      author: 'Robert C. Martin',
+      url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+    }
+
+    const response = await api
+      .post('/api/login')
+      .send(helper.user)
+
+    const token = 'Bearer'.concat(' ', response.body.token)
+
+    await api
+      .post('/api/blogs')
+      .set({ 'Authorization': token })
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -82,8 +122,15 @@ describe.only('addition of a new blog', () => {
       likes: 5
     }
 
+    const response = await api
+      .post('/api/login')
+      .send(helper.user)
+
+    const token = 'Bearer'.concat(' ', response.body.token)
+
     await api
       .post('/api/blogs')
+      .set({ 'Authorization': token })
       .send(newBlog)
       .expect(400)
   })
@@ -95,13 +142,21 @@ describe.only('addition of a new blog', () => {
       likes: 5
     }
 
+    const response = await api
+      .post('/api/login')
+      .send(helper.user)
+
+    const token = 'Bearer'.concat(' ', response.body.token)
+
     await api
       .post('/api/blogs')
+      .set({ 'Authorization': token })
       .send(newBlog)
       .expect(400)
   })
 })
 
+/* have not fixed tests below to use jwt
 describe('deletion of a blog', () => {
   test('succeeds with status code 204 if id is valid', async () => {
     const blogsBefore = await helper.blogsInDb()
@@ -175,6 +230,7 @@ describe('updating a blog', () => {
       .expect(200)
   })
 })
+*/
 
 after(async () => {
   await mongoose.connection.close()

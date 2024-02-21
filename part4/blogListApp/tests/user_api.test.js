@@ -9,7 +9,7 @@ const app = require('../app')
 
 const api = supertest(app)
 
-describe.only('when there is one user in db', () => {
+describe('when there is one user in db', () => {
   beforeEach(async () => {
     await User.deleteMany({})
 
@@ -104,7 +104,7 @@ describe.only('when there is one user in db', () => {
     })
   })
 
-  describe.only('password tests', () => {
+  describe('password tests', () => {
     test('creation fails with proper statuscode and message if password is missing', async () => {
       const usersAtStart = await helper.usersInDb()
       const user = {
@@ -123,7 +123,7 @@ describe.only('when there is one user in db', () => {
       assert.strictEqual(usersAtEnd.length, usersAtStart.length)
     })
 
-    test.only('creation fails with proper statuscode and message if password is less than 3 characters long', async () => {
+    test('creation fails with proper statuscode and message if password is less than 3 characters long', async () => {
       const usersAtStart = await helper.usersInDb()
       const user = {
         username: 'username123',
