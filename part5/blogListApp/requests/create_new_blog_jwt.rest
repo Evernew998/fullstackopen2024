@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkxhaWNpOTk4IiwiaWQiOiI2NWQ0NzM3OTE2YTRjNDkyYTUxZDllYjMiLCJpYXQiOjE3MDg0MjUxMjN9.reeUOwNkG2X4QmYgQ66-JZqqlyCLAZqj05crJtyWacg
+
+{
+  "title": "Hello",
+  "author": "Putin",
+  "url": "blogUrlTest",
+  "likes": 23
+}
