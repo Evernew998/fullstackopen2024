@@ -21,7 +21,9 @@ const App = () => {
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
-      setUser(JSON.parse(loggedUserJSON))
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -65,12 +67,17 @@ const App = () => {
       url: url
     }
 
-    const response = await blogService.create(blogObject)
-    console.log(response)
-
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    try {
+      const response = await blogService.create(blogObject)
+      console.log(response)
+      setBlogs(blogs.concat(response))
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+    }
+    catch (exception) {
+      console.log(exception)
+    }
   }
 
   if (user === null) {
