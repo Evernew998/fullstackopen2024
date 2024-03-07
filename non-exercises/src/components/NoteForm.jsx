@@ -8,7 +8,7 @@ const NoteForm = ({ createNote }) => {
     createNote({
       content: newNote,
       important: true
-    })
+  })
 
     setNewNote('')
   }
