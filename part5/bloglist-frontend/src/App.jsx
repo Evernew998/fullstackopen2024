@@ -123,6 +123,21 @@ const App = () => {
     try {
       const updatedBlog = await blogService.update(id, blogObject)
       console.log(updatedBlog)
+
+      const updatedBlogs = blogs.map(b => b.id === updatedBlog.id ? updatedBlog : b)
+      updatedBlogs.sort((a, b) => {
+        if (a.likes > b.likes) {
+          return -1
+        }
+        else if (a.likes === b.likes) {
+          return 0
+        }
+        else {
+          return 1
+        }
+      })
+      
+      setBlogs(updatedBlogs)
     }
     catch (exception) {
       console.log(exception)

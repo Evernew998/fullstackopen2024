@@ -112,6 +112,8 @@ blogRouter.put('/:id', middleware.userExtractor, async (request, response, next)
 
   try {
     const updatedBlog = await Blog.findByIdAndUpdate(id, blog, { new: true })
+    updatedBlog.user = user
+    updatedBlog.user.blogs = undefined
     response.json(updatedBlog)
   }
   catch (execption) {
