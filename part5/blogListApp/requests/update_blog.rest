@@ -1,0 +1,10 @@
+PUT http://localhost:3003/api/blogs/65e6d45eef2e90a29730dcc0
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkxhaWNpOTk4IiwiaWQiOiI2NWQ0NzM3OTE2YTRjNDkyYTUxZDllYjMiLCJpYXQiOjE3MDk4OTQ3MTYsImV4cCI6MTcwOTg5NTMxNn0.t36_YO0oA1uE3tdSkFH9bBO4GDP1IeFbUMrK89U0_yk
+
+{
+  "title": "Things I don't know as of 2018",
+  "author": "Dan Abramov",
+  "url": "dan.com",
+  "likes": 1
+}

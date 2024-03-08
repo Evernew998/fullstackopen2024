@@ -104,6 +104,27 @@ const App = () => {
     }
   }
 
+  const incrementLike = async (id, blogObject) => {
+    try {
+      const updatedBlog = await blogService.update(id, blogObject)
+      console.log(updatedBlog)
+    }
+    catch (exception) {
+      console.log(exception)
+
+      const newNotificationObject = {
+        status: 'error',
+        message: `There was an error when liking the blog "${blogObject.title}" by ${blogObject.author}`
+      }
+
+      setNotificationObject(newNotificationObject)
+
+      setTimeout(() => {
+        setNotificationObject(null)
+      }, 4000)
+    }
+  }
+
   if (user === null) {
     return (
       <form onSubmit={handleLogin}>
@@ -144,7 +165,7 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} increaseLike={incrementLike}/>
       )}
     </div>
   )
