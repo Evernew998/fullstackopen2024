@@ -44,6 +44,8 @@ blogRouter.post('/', middleware.userExtractor, async (request, response, next) =
     user.blogs = user.blogs.concat(returnedBlog._id)
     await user.save()
 
+    returnedBlog.user = user
+    returnedBlog.user.blogs = undefined
     response.status(201).json(returnedBlog)
   }
   catch (execption) {
