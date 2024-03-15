@@ -53,7 +53,7 @@ blogRouter.post('/', middleware.userExtractor, async (request, response, next) =
   }
 })
 
-blogRouter.delete('/:id', async (request, response, next) => {
+blogRouter.delete('/:id', middleware.userExtractor, async (request, response, next) => {
   const blogId =  request.params.id
 
   try {
@@ -102,18 +102,17 @@ blogRouter.put('/:id', middleware.userExtractor, async (request, response, next)
     })
   }
 
-  const blog = {
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-    user: user._id
-  }
-
   try {
-    const updatedBlog = await Blog.findByIdAndUpdate(id, blog, { new: true })
-    updatedBlog.user = user
-    updatedBlog.user.blogs = undefined
+    const blog = {
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      user: body.user.id
+    }
+
+    const updatedBlog = await Blog.findByIdAndUpdate(id, blog, { new: true }).populate('user',{ username: 1, name: 1 })
+    console.log('updatedBlog: ', updatedBlog)
     response.json(updatedBlog)
   }
   catch (execption) {

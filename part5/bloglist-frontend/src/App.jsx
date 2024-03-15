@@ -155,6 +155,27 @@ const App = () => {
     }
   }
 
+  const deleteBlog = async (blogId) => {
+    try {
+      const response = await blogService.deleteBlog(blogId)
+      const filteredBlogs = blogs.filter(blog => blog.id !== blogId)
+
+      setBlogs(filteredBlogs)
+    }
+    catch (exception){
+      const newNotificationObject = {
+        status: 'error',
+        message: `There was an error when deleting the blog "${blogObject.title}" by ${blogObject.author}`
+      }
+
+      setNotificationObject(newNotificationObject)
+
+      setTimeout(() => {
+        setNotificationObject(null)
+      }, 4000)
+    }
+  }
+
   if (user === null) {
     return (
       <form onSubmit={handleLogin}>
@@ -195,7 +216,13 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} increaseLike={incrementLike}/>
+        <Blog 
+          key={blog.id} 
+          blog={blog} 
+          increaseLike={incrementLike} 
+          user={user}
+          removeBlog={deleteBlog}
+        />
       )}
     </div>
   )
