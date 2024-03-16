@@ -30,8 +30,7 @@ const App = () => {
         })
 
         setBlogs(sortedBlogs)
-      }
-    )  
+      })
   }, [])
 
   useEffect(() => {
@@ -66,7 +65,7 @@ const App = () => {
       setNotificationObject(newNotificationObject)
       setTimeout(() => {
         setNotificationObject(null)
-      }, 4000);
+      }, 4000)
     }
   }
 
@@ -93,7 +92,7 @@ const App = () => {
         status: 'success',
         message: `${response.title} by ${response.author} added`
       }
-      
+
       setBlogs(blogs.concat(response))
 
       blogFormRef.current.toggleVisibility()
@@ -136,7 +135,7 @@ const App = () => {
           return 1
         }
       })
-      
+
       setBlogs(updatedBlogs)
     }
     catch (exception) {
@@ -165,7 +164,7 @@ const App = () => {
     catch (exception){
       const newNotificationObject = {
         status: 'error',
-        message: `There was an error when deleting the blog "${blogObject.title}" by ${blogObject.author}`
+        message: 'There was an error when deleting blog'
       }
 
       setNotificationObject(newNotificationObject)
@@ -183,7 +182,7 @@ const App = () => {
         <Notification notificationObject={notificationObject}/>
         <div>
           username
-          <input 
+          <input
             type="text"
             name='Username'
             value={username}
@@ -192,7 +191,7 @@ const App = () => {
         </div>
         <div>
           password
-          <input 
+          <input
             type="password"
             name='Password'
             value={password}
@@ -216,10 +215,10 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs.map(blog =>
-        <Blog 
-          key={blog.id} 
-          blog={blog} 
-          increaseLike={incrementLike} 
+        <Blog
+          key={blog.id}
+          blog={blog}
+          increaseLike={incrementLike}
           user={user}
           removeBlog={deleteBlog}
         />
