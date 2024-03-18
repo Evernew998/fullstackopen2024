@@ -21,10 +21,12 @@ describe('<Blog />', () => {
     name: 'laici'
   }
 
+  const mockIncreaseLike = vi.fn()
+
   let container
 
   beforeEach(() => {
-    container = render(<Blog blog={blog} user={user} />).container
+    container = render(<Blog blog={blog} user={user} increaseLike={mockIncreaseLike} />).container
   })
 
   test('renders blog title and author but not blog url or blog likes', () => {
@@ -44,9 +46,16 @@ describe('<Blog />', () => {
     const button = screen.getByText('view')
     await user.click(button)
 
-    screen.debug()
-
     const blogInfoFull = container.querySelector('.blogInfoFull')
     expect(blogInfoFull).not.toHaveStyle('display: none')
+  })
+
+  test('if the like button is clicked twice, the event handler is called twice', async () => {
+    const user = userEvent.setup()
+    const button = screen.getByText('like')
+    await user.click(button)
+    await user.click(button)
+
+    expect(mockIncreaseLike.mock.calls).toHaveLength(2)
   })
 })
