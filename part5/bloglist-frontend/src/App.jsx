@@ -183,6 +183,7 @@ const App = () => {
         <div>
           username
           <input
+            data-testid='username'
             type="text"
             name='Username'
             value={username}
@@ -192,6 +193,7 @@ const App = () => {
         <div>
           password
           <input
+            data-testid='password'
             type="password"
             name='Password'
             value={password}
