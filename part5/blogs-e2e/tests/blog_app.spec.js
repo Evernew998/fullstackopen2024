@@ -48,4 +48,29 @@ describe('Blog app', () => {
       await expect(page.getByText('Matti Luukkainen logged in')).not.toBeVisible()
     })
   })
+
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+      await page.getByTestId('username').fill('mluukkai')
+      await page.getByTestId('password').fill('salainen')
+      await page.getByRole('button', { name: 'login' }).click()
+    })
+  
+    test('a new blog can be created', async ({ page }) => {
+      await page.getByRole('button',{ name: 'create new blog' }).click()
+
+      await page.getByTestId('blogTitle').fill('Spiderman')
+      await page.getByTestId('blogAuthor').fill('Peter Parker')
+      await page.getByTestId('blogUrl').fill('spiderman.com')
+
+      await page.getByRole('button',{ name: 'create' }).click()
+
+      const successDiv = page.locator('.success')
+      await expect(successDiv).toHaveCSS('border-style', 'solid')
+      await expect(successDiv).toHaveCSS('color', 'rgb(0, 128, 0)')
+      await expect(successDiv).toContainText('Spiderman by Peter Parker added')
+
+      await expect(page.getByText('Spiderman Peter Parker')).toBeVisible()
+    })
+  })
 })
