@@ -72,5 +72,29 @@ describe('Blog app', () => {
 
       await expect(page.getByText('Spiderman Peter Parker')).toBeVisible()
     })
+
+    describe('and a blog exists', () => {
+      beforeEach(async ({ page }) => {
+        await page.getByRole('button',{ name: 'create new blog' }).click()
+
+        await page.getByTestId('blogTitle').fill('Spiderman')
+        await page.getByTestId('blogAuthor').fill('Peter Parker')
+        await page.getByTestId('blogUrl').fill('spiderman.com')
+  
+        await page.getByRole('button',{ name: 'create' }).click()
+      })
+
+      test('a blog can be edited by liking it', async ({ page }) => {
+        await page.getByRole('button', { name: 'view' }).click()
+        await page.getByRole('button', { name: 'like' }).click()
+        
+        await expect(page.getByText('likes 1 ')).toBeVisible()
+        await expect(page.locator('.error')).not.toBeVisible()
+        /*
+        await expect(page.getByText('There was an error when liking the blog "Spiderman" by Peter Parker'))
+          .not.toBeVisible()
+        */
+      })
+    })
   })
 })
