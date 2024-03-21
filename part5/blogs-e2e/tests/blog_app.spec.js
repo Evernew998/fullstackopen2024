@@ -82,10 +82,11 @@ describe('Blog app', () => {
         await page.getByTestId('blogUrl').fill('spiderman.com')
   
         await page.getByRole('button',{ name: 'create' }).click()
+
+        await page.getByRole('button', { name: 'view' }).click()
       })
 
       test('a blog can be edited by liking it', async ({ page }) => {
-        await page.getByRole('button', { name: 'view' }).click()
         await page.getByRole('button', { name: 'like' }).click()
         
         await expect(page.getByText('likes 1 ')).toBeVisible()
@@ -94,6 +95,13 @@ describe('Blog app', () => {
         await expect(page.getByText('There was an error when liking the blog "Spiderman" by Peter Parker'))
           .not.toBeVisible()
         */
+      })
+
+      test('user who added a blog can delete the blog', async ({ page }) => {
+        page.on('dialog', dialog => dialog.accept());
+        await page.getByRole('button', { name: 'remove' }).click()
+
+        await expect(page.getByText('Spiderman Peter Parker')).not.toBeVisible()
       })
     })
   })
